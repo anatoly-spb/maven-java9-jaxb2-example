@@ -1,0 +1,92 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>my jaxb</name>
+
+    <groupId>my</groupId>
+    <artifactId>my-jaxb</artifactId>
+    <version>0.1</version>
+
+    <properties>
+        <encoding>UTF-8</encoding>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
+        <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <tasks>
+                                <echo message="Create target/generated-sources/jaxb"/>
+                                <mkdir dir="${project.build.directory}/generated-sources/jaxb"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <executions>
+                    <execution>
+                        <id>Generate schema types</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>xjc</executable>
+                    <arguments>
+                        <argument>-encoding</argument>
+                        <argument>${encoding}</argument>
+                        <argument>-enableIntrospection</argument>
+                        <argument>-p</argument>
+                        <argument>my.jaxb</argument>
+                        <argument>-extension</argument>
+                        <argument>-d</argument>
+                        <argument>${project.build.directory}/generated-sources/jaxb</argument>
+                        <argument>${project.basedir}/xsd/library.xsd</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jaxb</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
